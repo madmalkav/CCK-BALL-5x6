@@ -1,0 +1,14 @@
+file_format: "1"
+id: cck_ball
+name: CCK_BALL
+type: shield
+url: https://github.com/Bastardkb/Charybdis/
+requires: [pro_micro]
+features:
+  - keys
+  - pointer
+  - underglow
+  - studio
+siblings:
+  - cck_ball_left
+  - cck_ball_right

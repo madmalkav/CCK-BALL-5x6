@@ -99,6 +99,27 @@ docker-clean:
 docker-settings-reset:
 	$(DOCKER_CMD) make settings-reset
 
+# Docker: Build OTA variant
+docker-ota:
+	$(DOCKER_CMD) make ota
+
+ota: left-ota right-ota
+
+left-ota:
+	west zephyr-export
+	west build -d build/left_ota -s zmk/app -b nice_nano_v2 -- -DSHIELD=cck_ball_ota_left -DZMK_CONFIG="$(CURDIR)/config"
+
+right-ota:
+	west zephyr-export
+	west build -d build/right_ota -s zmk/app -b nice_nano_v2 -- -DSHIELD=cck_ball_ota_right -DZMK_CONFIG="$(CURDIR)/config"
+
+# Docker: Build MCUboot bootloader
+docker-mcuboot:
+	$(DOCKER_CMD) bash scripts/build_mcuboot.sh
+
+# Docker: Build everything for OTA (MCUboot + both halves)
+docker-ota-all: docker-mcuboot docker-ota
+
 # Help
 help:
 	@echo "CCK-BALL ZMK Firmware Build"

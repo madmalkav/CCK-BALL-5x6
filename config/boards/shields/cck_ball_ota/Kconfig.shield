@@ -1,0 +1,5 @@
+config SHIELD_CCK_BALL_OTA_LEFT
+    def_bool $(shields_list_contains,cck_ball_ota_left)
+
+config SHIELD_CCK_BALL_OTA_RIGHT
+    def_bool $(shields_list_contains,cck_ball_ota_right)

@@ -1,0 +1,17 @@
+if SHIELD_CCK_BALL_OTA_RIGHT
+
+config ZMK_KEYBOARD_NAME
+	default "CCK BALL OTA"
+
+config ZMK_SPLIT_BLE_ROLE_CENTRAL
+	default y
+
+endif
+
+if SHIELD_CCK_BALL_OTA_LEFT || SHIELD_CCK_BALL_OTA_RIGHT
+
+config ZMK_SPLIT
+	default y
+
+endif
+

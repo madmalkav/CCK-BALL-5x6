@@ -1,0 +1,188 @@
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 1000 // 600
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 12   // 10
+
+#include <input/processors.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/pointing.h>
+
+&mmv_input_listener { input-processors = <&zip_xy_scaler 2 1>; };
+
+&msc_input_listener { input-processors = <&zip_scroll_scaler 2 1>; };
+
+&msc {
+    acceleration-exponent = <0>;      // 0
+    time-to-max-speed-ms = <300>;       // 300
+    delay-ms = <0>;                   // 0
+};
+
+&mmv {
+    time-to-max-speed-ms = <500>;
+    acceleration-exponent = <1>;
+    trigger-period-ms = <16>;
+};
+
+&soft_off { hold-time-ms = <2000>; };
+
+/ {
+    // Vertical scroll encoder behavior
+    scroll_vertical_encoder: scroll_vertical_encoder {
+        compatible = "zmk,behavior-sensor-rotate";
+        #sensor-binding-cells = <0>;
+        bindings = <&msc SCRL_DOWN>, <&msc SCRL_UP>;
+        tap-ms = <100>;
+    };
+
+    // Horizontal scroll encoder behavior
+    scroll_horizontal_encoder: scroll_horizontal_encoder {
+        compatible = "zmk,behavior-sensor-rotate";
+        #sensor-binding-cells = <0>;
+        bindings = <&msc SCRL_LEFT>, <&msc SCRL_RIGHT>;
+        tap-ms = <100>;
+    };
+    
+    behaviors {
+        td_colon: td_colon {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&kp SEMI>, <&kp COLON>;    
+            
+        };
+        td_quote: td_quote {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&kp SQT>, <&kp DQT>, <&kp AT>;
+            
+        };
+        paranthesis_dance: paranthesis_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&ocpar>, <&kp LPAR>, <&kp RPAR>;
+        };
+        curl_dance: curl_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&occurl>, <&kp LBRC>, <&kp RBRC>;
+        };
+        squ_dance: squ_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&ocsqu>, <&kp LBKT>, <&kp RBKT>;
+        };
+        ang_dance: ang_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&ocang>, <&kp LT>, <&kp GT>;
+        };
+    };
+
+    macros {
+        ocpar: ocpar {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp LPAR &kp RPAR &kp LEFT_ARROW>
+                ;
+        };
+        occurl: occurl {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp LBRC &kp RBRC &kp LEFT_ARROW>
+                ;
+        };
+        ocsqu: ocsqu {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp LBKT &kp RBKT &kp LEFT_ARROW>
+                ;
+        };
+        ocang: ocang {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_tap &kp LT &kp GT &kp LEFT_ARROW>
+                ;
+        };
+    };
+    
+    keymap {
+        compatible = "zmk,keymap";
+
+        QWERTY {
+            bindings = <
+&kp TAB     &kp Q         &kp W         &kp E            &kp R      &kp T   &kp Y   &kp U      &kp I      &kp O           &kp P           &kp BSPC
+&kp ESC     &kp A         &kp S         &kp D            &kp F      &kp G   &kp H   &kp J      &kp K      &kp L           &td_colon       &td_quote
+&kp LSHIFT  &kp Z         &kp X         &kp C            &kp V      &kp B   &kp N   &kp M      &kp COMMA  &kp DOT         &kp UP_ARROW    &kp FSLH
+&kp LCTRL   &kp LWIN      &kp LALT      &kp NON_US_BSLH  &kp SPACE  &mo 1   &mo 2   &kp SPACE  &kp ENTER  &kp LEFT_ARROW  &kp DOWN_ARROW  &kp RIGHT_ARROW
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &scroll_vertical_encoder>;
+        };
+
+        SYM_layers {
+            bindings = <
+&kp GRAVE   &kp INS   &kp PG_UP      &kp HOME          &ang_dance   &none        &paranthesis_dance     &kp N7      &kp N8   &kp N9   &none      &trans
+&none       &kp DEL   &kp PG_DN      &kp END           &squ_dance   &curl_dance  &kp EQUAL              &kp N4      &kp N5   &kp N6   &kp STAR   &none
+&kp LSHIFT  &kp PSCRN &kp C_AL_LOCK  &kp LC(LA(DEL))   &mo 3        &none        &kp MINUS              &kp N1      &kp N2   &kp N3   &kp FSLH   &none
+&kp LCTRL   &kp LGUI  &kp LALT       &kp NON_US_HASH   &none        &none        &mkp LCLK              &mkp RCLK  &none   &kp N0   &kp DOT    &kp K_CMENU
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &scroll_horizontal_encoder>;
+        };
+
+        FKP_layers {
+            bindings = <
+&kp SYSREQ  &kp F9          &kp F10       &kp F11       &kp F12      &none        &kp KP_NUM   &kp KP_N7  &kp KP_N8  &kp KP_N9     &kp KP_MULTIPLY  &none
+&none       &kp F5          &kp F6        &kp F7        &kp F8       &none        &none        &kp KP_N4  &kp KP_N5  &kp KP_N6     &kp KP_SLASH     &none
+&none       &kp F1          &kp F2        &kp F3        &kp F4       &none        &none        &kp KP_N1  &kp KP_N2  &kp KP_N3     &kp KP_PLUS      &kp KP_ENTER
+&trans      &trans          &trans        &none         &none        &none        &none        &none      &kp KP_N0  &kp KP_DOT    &kp KP_MINUS     &none
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+
+        BT_layers {
+            bindings = <
+&bootloader  &none           &none         &none        &none        &none        &bt BT_SEL 0    &bt BT_SEL 1  &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &bt BT_SEL 5
+&none        &bt BT_CLR_ALL  &bt BT_CLR    &none        &none        &bt BT_PRV   &none           &none         &none        &none        &none        &none
+&none        &none           &none         &none        &none        &bt BT_NXT   &none           &none         &none        &none        &none        &none
+&none        &none           &none         &none        &none        &none        &none           &none         &none        &none        &none        &bootloader
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+
+        scroll-layers {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+
+        snipe-layers {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+
+            sensor-bindings = <&scroll_vertical_encoder>,   // Encoder 1: vertical scroll
+                             <&scroll_horizontal_encoder>;  // Encoder 2: horizontal scroll
+        };
+    };
+};

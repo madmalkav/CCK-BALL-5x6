@@ -1,6 +1,8 @@
 # Build artifacts
 build/
 *.uf2
+*.bin
+*.hex
 
 # ZMK workspace (only needed for native builds, not Docker)
 modules/
@@ -9,3 +11,4 @@ zephyr/
 bootloader/
 zmk/
 .west/
+zmk-pmw3610-driver/
