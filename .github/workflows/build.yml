@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - main_zmk_0.2
     tags:
       - "*-zmk_*"
   pull_request:
