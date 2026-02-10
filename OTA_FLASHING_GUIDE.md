@@ -4,6 +4,17 @@ This guide covers flashing MCUboot and OTA-enabled ZMK firmware onto a nice!nano
 
 > **⚠️ WARNING:** This process replaces the factory Adafruit bootloader. If something goes wrong, USB recovery will not work — you'll need the Bus Pirate again to re-flash.
 
+## 🚨 Risks & Trade-offs (Read Before Flashing)
+
+Switching to MCUboot fundamentally changes how you interact with your nice!nano:
+
+1.  **No More USB Drive**: You will **lose the `NICENANO` USB drive**. You cannot drag-and-drop `.uf2` files anymore. All updates must be done via Bluetooth (OTA) or SWD (Bus Pirate).
+2.  **Recovery Requires Hardware**: If you flash bad firmware that crashes the Bluetooth stack, you **cannot** recover via USB. You must re-connect the Bus Pirate to unbrick the board.
+3.  **Incompatible Firmware**: You cannot flash standard nice!nano ZMK builds (from nice!nano docs or GitHub Actions) onto this board anymore. They expect the Adafruit bootloader/SoftDevice layout. You must ONLY use your custom `docker-ota` builds.
+4.  **LED Status**: In bootloader mode, the blue LED on the nice!nano might not behave as expected (pulse/blink) because the generic nRF52840 build definition uses different LED pins. This is cosmetic and does not affect functionality.
+
+---
+
 ## Prerequisites
 
 - **Bus Pirate** (v3 or v4)
@@ -65,7 +76,22 @@ source [find target/nrf52.cfg]
 adapter speed 1000
 ```
 
-## Step 4: Flash MCUboot (First Time Only)
+## Step 4: Backup Existing Firmware/Bootloader (Highly Recommended)
+
+Before you erase the chip, dump the current full 1MB flash content. This saves your existing Adafruit bootloader, SoftDevice, and ZMK firmware so you can restore it exactly as it was.
+
+```bash
+# Dump entire 1MB flash to a binary file (takes ~2-3 minutes)
+openocd -f buspirate-nrf52.cfg -c "init; dump_image backup_full.bin 0x0 0x100000; exit"
+```
+
+**To Restore Backup:**
+
+```bash
+openocd -f buspirate-nrf52.cfg -c "init; halt; nrf5 mass_erase; program backup_full.bin 0x0 verify reset exit"
+```
+
+## Step 5: Flash MCUboot (First Time Only)
 
 ```bash
 # 1. Full chip erase (removes Adafruit bootloader + SoftDevice)
@@ -78,11 +104,11 @@ openocd -f buspirate-nrf52.cfg -c "program mcuboot_nice_nano_v2.hex verify reset
 openocd -f buspirate-nrf52.cfg -c "program build/right_ota/zephyr/zmk.hex verify reset exit"
 ```
 
-## Step 5: Verify It Works
+## Step 6: Verify It Works
 
 After flashing, the keyboard should boot and be discoverable via Bluetooth as "CCK BALL OTA".
 
-## Step 6: Future OTA Updates (No Wires!)
+## Step 7: Future OTA Updates (No Wires!)
 
 Once MCUboot + MCUmgr is running, update firmware over Bluetooth:
 
