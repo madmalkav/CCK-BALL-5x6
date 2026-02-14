@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: MIT
  */
- 
+
 #include "cck_ball.dtsi"
 
 &default_transform {
     col-offset = <6>;
-}; 
+};
 
 &kscan0 {
 	col-gpios
@@ -55,8 +55,8 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        scroll-layers = <4>;
-        snipe-layers = <5>;
+        scroll-layers = <3>;
+        snipe-layers = <4>;
       // automouse-layer = <3>;
     };
 };
@@ -116,4 +116,3 @@
 &right_encoder {
 	status = "okay";
 };
-

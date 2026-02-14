@@ -1,7 +1,7 @@
 if SHIELD_CCK_BALL_RIGHT
 
 config ZMK_KEYBOARD_NAME
-	default "WK CCK BALL 4x6"
+	default "WK CCK BALL 5x6"
 
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
 	default y
@@ -14,4 +14,3 @@ config ZMK_SPLIT
 	default y
 
 endif
-
