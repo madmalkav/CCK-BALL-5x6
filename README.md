@@ -4,7 +4,7 @@ This repository adapts the fixes made in https://github.com/ryanm101/CCK-BALL/ f
 
 Other changes that I've made based on personal preference and you may want to customize:
 
-- CPI for the trackball in normal mode and sniper mode increased to 3200 and 1200
+- CPI for the trackball in normal mode and sniper mode increased to 2400 and 1200
 - Keymap adapted to my personal taste (WIP, will share some screenshots when I settle on a configuration)
 
 
